@@ -1,0 +1,28 @@
+parameters:
+- name: serviceName
+  type: string
+- name: projectPath
+  type: string
+- name: dockerfilePath
+  type: string
+
+jobs:
+- job: Build
+  displayName: Build and containerise
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - checkout: self
+  - template: ../steps/dotnet-restore.yaml
+    parameters:
+      projectPath: ${{ parameters.projectPath }}
+  - template: ../steps/dotnet-build.yaml
+    parameters:
+      projectPath: ${{ parameters.projectPath }}
+  - template: ../steps/security-scan.yaml
+    parameters:
+      projectPath: ${{ parameters.projectPath }}
+  - template: ../steps/docker-build-push.yaml
+    parameters:
+      serviceName: ${{ parameters.serviceName }}
+      dockerfilePath: ${{ parameters.dockerfilePath }}

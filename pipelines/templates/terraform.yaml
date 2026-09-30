@@ -1,0 +1,25 @@
+parameters:
+- name: environment
+  type: string
+- name: apply
+  type: boolean
+  default: false
+
+stages:
+- stage: TerraformPlan_${{ parameters.environment }}
+  displayName: Terraform plan - ${{ parameters.environment }}
+  jobs:
+  - template: ../jobs/terraform-plan.yaml
+    parameters:
+      environment: ${{ parameters.environment }}
+      tfvarsFile: ${{ parameters.environment }}.tfvars
+
+- ${{ if eq(parameters.apply, true) }}:
+  - stage: TerraformApply_${{ parameters.environment }}
+    displayName: Terraform apply - ${{ parameters.environment }}
+    dependsOn: TerraformPlan_${{ parameters.environment }}
+    condition: succeeded()
+    jobs:
+    - template: ../jobs/terraform-apply.yaml
+      parameters:
+        environment: ${{ parameters.environment }}

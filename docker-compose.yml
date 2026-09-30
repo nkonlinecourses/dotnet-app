@@ -1,0 +1,18 @@
+services:
+  product-service:
+    build:
+      context: .
+      dockerfile: src/ProductService/Dockerfile
+    ports:
+      - "5001:8080"
+
+  order-service:
+    build:
+      context: .
+      dockerfile: src/OrderService/Dockerfile
+    environment:
+      ProductServiceUrl: http://product-service:8080
+    ports:
+      - "5002:8080"
+    depends_on:
+      - product-service

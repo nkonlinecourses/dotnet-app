@@ -1,0 +1,11 @@
+parameters:
+- name: projectPath
+  type: string
+steps:
+- bash: dotnet test "${{ parameters.projectPath }}" --configuration Release --logger trx --results-directory "$(Agent.TempDirectory)/test-results"
+  displayName: dotnet test
+- task: PublishTestResults@2
+  condition: always()
+  inputs:
+    testResultsFormat: VSTest
+    testResultsFiles: '$(Agent.TempDirectory)/test-results/*.trx'

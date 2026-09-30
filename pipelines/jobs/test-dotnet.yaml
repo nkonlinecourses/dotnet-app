@@ -1,0 +1,19 @@
+parameters:
+- name: serviceName
+  type: string
+- name: testProjectPath
+  type: string
+
+jobs:
+- job: Test
+  displayName: Unit tests
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - checkout: self
+  - template: ../steps/dotnet-restore.yaml
+    parameters:
+      projectPath: ${{ parameters.testProjectPath }}
+  - template: ../steps/dotnet-test.yaml
+    parameters:
+      projectPath: ${{ parameters.testProjectPath }}

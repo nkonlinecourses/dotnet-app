@@ -1,0 +1,16 @@
+parameters:
+- name: serviceName
+  type: string
+- name: dockerfilePath
+  type: string
+steps:
+- task: Docker@2
+  displayName: Build and push ${{ parameters.serviceName }}
+  inputs:
+    command: buildAndPush
+    containerRegistry: $(acrServiceConnection)
+    repository: ${{ parameters.serviceName }}
+    dockerfile: ${{ parameters.dockerfilePath }}
+    buildContext: $(Build.SourcesDirectory)
+    tags: |
+      $(Build.BuildId)

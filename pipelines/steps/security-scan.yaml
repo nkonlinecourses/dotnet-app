@@ -1,0 +1,6 @@
+parameters:
+- name: projectPath
+  type: string
+steps:
+- bash: dotnet list "${{ parameters.projectPath }}" package --vulnerable --include-transitive
+  displayName: Dependency vulnerability check

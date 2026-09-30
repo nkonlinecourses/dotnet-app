@@ -1,0 +1,11 @@
+location="uksouth"
+resource_group_name="rg-microservices-test"
+vnet_name="vnet-microservices-test"
+vnet_cidr="10.30.0.0/16"
+aks_subnet_cidr="10.30.1.0/24"
+private_endpoint_subnet_cidr="10.30.2.0/24"
+acr_name="REPLACEUNIQUEacrtest"
+key_vault_name="REPLACE-UNIQUE-kv-test"
+aks_name="aks-microservices-test"
+node_count=2
+vm_size="Standard_D2s_v5"

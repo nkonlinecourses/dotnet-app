@@ -1,0 +1,6 @@
+parameters:
+- name: projectPath
+  type: string
+steps:
+- bash: dotnet restore "${{ parameters.projectPath }}"
+  displayName: dotnet restore

@@ -1,0 +1,14 @@
+parameters:
+- name: environment
+  type: string
+steps:
+- task: AzureCLI@2
+  displayName: Terraform apply saved plan
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    scriptType: bash
+    scriptLocation: inlineScript
+    workingDirectory: $(System.DefaultWorkingDirectory)/terraform/environments/${{ parameters.environment }}
+    inlineScript: |
+      set -euo pipefail
+      terraform apply -input=false -auto-approve "$(Pipeline.Workspace)/terraform-plan-${{ parameters.environment }}/${{ parameters.environment }}.tfplan"

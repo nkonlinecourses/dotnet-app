@@ -1,0 +1,3 @@
+nameOverride: product-service
+image: { repository: REPLACE_ACR/product-service, tag: latest }
+ingress: { enabled: true, className: nginx, host: demo.local, path: /api/products, pathType: Prefix }

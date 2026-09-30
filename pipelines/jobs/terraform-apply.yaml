@@ -1,0 +1,23 @@
+parameters:
+- name: environment
+  type: string
+
+jobs:
+- deployment: Apply
+  displayName: Apply approved Terraform plan
+  environment: infrastructure-${{ parameters.environment }}
+  pool:
+    vmImage: ubuntu-latest
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - checkout: self
+        - download: current
+          artifact: terraform-plan-${{ parameters.environment }}
+        - template: ../steps/terraform-init.yaml
+          parameters:
+            environment: ${{ parameters.environment }}
+        - template: ../steps/terraform-apply.yaml
+          parameters:
+            environment: ${{ parameters.environment }}

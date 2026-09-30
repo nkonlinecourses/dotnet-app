@@ -1,0 +1,21 @@
+parameters:
+- name: environment
+  type: string
+steps:
+- task: AzureCLI@2
+  displayName: Terraform init and validate
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    scriptType: bash
+    scriptLocation: inlineScript
+    workingDirectory: $(System.DefaultWorkingDirectory)/terraform/environments/${{ parameters.environment }}
+    inlineScript: |
+      set -euo pipefail
+      terraform fmt -check -recursive ../../
+      terraform init -input=false \
+        -backend-config="resource_group_name=$(backendResourceGroup)" \
+        -backend-config="storage_account_name=$(backendStorageAccount)" \
+        -backend-config="container_name=$(backendContainer)" \
+        -backend-config="key=${{ parameters.environment }}.tfstate" \
+        -backend-config="use_azuread_auth=true"
+      terraform validate

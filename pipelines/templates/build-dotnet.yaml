@@ -1,0 +1,21 @@
+parameters:
+- name: serviceName
+  type: string
+- name: projectPath
+  type: string
+- name: dockerfilePath
+  type: string
+- name: dependsOn
+  type: string
+
+stages:
+- stage: Build_${{ replace(parameters.serviceName, '-', '_') }}
+  displayName: Build ${{ parameters.serviceName }}
+  dependsOn: ${{ parameters.dependsOn }}
+  condition: succeeded()
+  jobs:
+  - template: ../jobs/build-dotnet.yaml
+    parameters:
+      serviceName: ${{ parameters.serviceName }}
+      projectPath: ${{ parameters.projectPath }}
+      dockerfilePath: ${{ parameters.dockerfilePath }}

@@ -1,0 +1,10 @@
+steps:
+- task: AzureCLI@2
+  displayName: Connect to AKS
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      set -euo pipefail
+      az aks get-credentials --resource-group "$(aksResourceGroup)" --name "$(aksClusterName)" --overwrite-existing

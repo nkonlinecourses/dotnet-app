@@ -1,0 +1,21 @@
+parameters:
+- name: serviceName
+  type: string
+- name: environment
+  type: string
+- name: valuesFile
+  type: string
+- name: dependsOn
+  type: string
+
+stages:
+- stage: Deploy_${{ replace(parameters.serviceName, '-', '_') }}_${{ parameters.environment }}
+  displayName: Deploy ${{ parameters.serviceName }} to ${{ parameters.environment }}
+  dependsOn: ${{ parameters.dependsOn }}
+  condition: succeeded()
+  jobs:
+  - template: ../jobs/release.yaml
+    parameters:
+      serviceName: ${{ parameters.serviceName }}
+      environment: ${{ parameters.environment }}
+      valuesFile: ${{ parameters.valuesFile }}

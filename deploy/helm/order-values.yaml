@@ -1,0 +1,6 @@
+nameOverride: order-service
+image: { repository: REPLACE_ACR/order-service, tag: latest }
+env:
+  - name: ProductServiceUrl
+    value: http://product-service
+ingress: { enabled: true, className: nginx, host: demo.local, path: /api/orders, pathType: Prefix }

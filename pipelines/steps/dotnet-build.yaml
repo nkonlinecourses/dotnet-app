@@ -1,0 +1,6 @@
+parameters:
+- name: projectPath
+  type: string
+steps:
+- bash: dotnet build "${{ parameters.projectPath }}" --configuration Release --no-restore
+  displayName: dotnet build

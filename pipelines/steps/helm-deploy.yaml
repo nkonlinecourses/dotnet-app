@@ -1,0 +1,19 @@
+parameters:
+- name: serviceName
+  type: string
+- name: environment
+  type: string
+- name: valuesFile
+  type: string
+steps:
+- bash: |
+    set -euo pipefail
+    helm upgrade --install "${{ parameters.serviceName }}" deploy/helm/microservice \
+      --namespace "microservices-${{ parameters.environment }}" \
+      --create-namespace \
+      -f "${{ parameters.valuesFile }}" \
+      --set image.repository="$(acrLoginServer)/${{ parameters.serviceName }}" \
+      --set image.tag="$(Build.BuildId)" \
+      --atomic --wait --timeout 5m
+    kubectl rollout status deployment/${{ parameters.serviceName }} -n "microservices-${{ parameters.environment }}" --timeout=180s
+  displayName: Helm deploy and rollout check

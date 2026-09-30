@@ -1,0 +1,39 @@
+trigger:
+  branches:
+    include: [main, develop]
+  paths:
+    include:
+      - src/OrderService/**
+      - tests/OrderService.Tests/**
+      - deploy/helm/**
+      - pipelines/**
+
+parameters:
+- name: targetEnvironment
+  type: string
+  default: dev
+  values: [dev, test, prod]
+- name: deploy
+  type: boolean
+  default: true
+
+stages:
+- template: templates/test-dotnet.yaml
+  parameters:
+    serviceName: order-service
+    testProjectPath: tests/OrderService.Tests/OrderService.Tests.csproj
+
+- template: templates/build-dotnet.yaml
+  parameters:
+    serviceName: order-service
+    projectPath: src/OrderService/OrderService.csproj
+    dockerfilePath: src/OrderService/Dockerfile
+    dependsOn: Test_order_service
+
+- ${{ if eq(parameters.deploy, true) }}:
+  - template: templates/deploy.yaml
+    parameters:
+      serviceName: order-service
+      environment: ${{ parameters.targetEnvironment }}
+      valuesFile: deploy/helm/order-values.yaml
+      dependsOn: Build_order_service

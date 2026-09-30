@@ -1,0 +1,30 @@
+trigger:
+  branches:
+    include: [main]
+  paths:
+    include: [terraform/**, pipelines/terraform.yml, pipelines/templates/**, pipelines/jobs/**, pipelines/steps/**]
+
+parameters:
+- name: environment
+  type: string
+  default: dev
+  values: [dev, test, prod]
+- name: apply
+  type: boolean
+  default: false
+
+variables:
+- name: azureServiceConnection
+  value: sc-azure-platform-wif
+- name: backendResourceGroup
+  value: rg-tfstate
+- name: backendStorageAccount
+  value: sttfstateREPLACE
+- name: backendContainer
+  value: tfstate
+
+stages:
+- template: templates/terraform.yaml
+  parameters:
+    environment: ${{ parameters.environment }}
+    apply: ${{ parameters.apply }}

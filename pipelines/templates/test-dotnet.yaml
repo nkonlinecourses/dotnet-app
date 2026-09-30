@@ -1,0 +1,14 @@
+parameters:
+- name: serviceName
+  type: string
+- name: testProjectPath
+  type: string
+
+stages:
+- stage: Test_${{ replace(parameters.serviceName, '-', '_') }}
+  displayName: Test ${{ parameters.serviceName }}
+  jobs:
+  - template: ../jobs/test-dotnet.yaml
+    parameters:
+      serviceName: ${{ parameters.serviceName }}
+      testProjectPath: ${{ parameters.testProjectPath }}

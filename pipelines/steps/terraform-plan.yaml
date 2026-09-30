@@ -1,0 +1,20 @@
+parameters:
+- name: environment
+  type: string
+- name: tfvarsFile
+  type: string
+steps:
+- task: AzureCLI@2
+  displayName: Terraform plan
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    scriptType: bash
+    scriptLocation: inlineScript
+    workingDirectory: $(System.DefaultWorkingDirectory)/terraform/environments/${{ parameters.environment }}
+    inlineScript: |
+      set -euo pipefail
+      test -f "${{ parameters.tfvarsFile }}" || { echo "Missing ${{ parameters.tfvarsFile }}"; exit 1; }
+      terraform plan -input=false -var-file="${{ parameters.tfvarsFile }}" -out="$(Build.ArtifactStagingDirectory)/${{ parameters.environment }}.tfplan"
+- publish: $(Build.ArtifactStagingDirectory)/${{ parameters.environment }}.tfplan
+  artifact: terraform-plan-${{ parameters.environment }}
+  displayName: Publish saved Terraform plan

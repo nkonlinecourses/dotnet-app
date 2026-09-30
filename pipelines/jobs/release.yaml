@@ -1,0 +1,25 @@
+parameters:
+- name: serviceName
+  type: string
+- name: environment
+  type: string
+- name: valuesFile
+  type: string
+
+jobs:
+- deployment: Release
+  displayName: Release ${{ parameters.serviceName }}
+  environment: application-${{ parameters.environment }}
+  pool:
+    name: $(privateAgentPool)
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - checkout: self
+        - template: ../steps/aks-login.yaml
+        - template: ../steps/helm-deploy.yaml
+          parameters:
+            serviceName: ${{ parameters.serviceName }}
+            environment: ${{ parameters.environment }}
+            valuesFile: ${{ parameters.valuesFile }}
