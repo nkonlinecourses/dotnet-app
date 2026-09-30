@@ -7,19 +7,26 @@ parameters:
   type: string
 
 jobs:
-- deployment: Release
-  displayName: Release ${{ parameters.serviceName }}
-  environment: application-${{ parameters.environment }}
-  pool:
-    name: $(privateAgentPool)
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-        - checkout: self
-        - template: ../steps/aks-login.yaml
-        - template: ../steps/helm-deploy.yaml
-          parameters:
-            serviceName: ${{ parameters.serviceName }}
-            environment: ${{ parameters.environment }}
-            valuesFile: ${{ parameters.valuesFile }}
+  - ${{ if eq(lower(parameters.environment), 'prod') }}:
+      - template: production-approval.yaml
+        parameters:
+          environment: ${{ parameters.environment }}
+          deploymentName: ${{ parameters.serviceName }}
+          approvalNotifyUsers: ${{ parameters.approvalNotifyUsers }}
+
+  - deployment: Release
+    displayName: Release ${{ parameters.serviceName }}
+    environment: application-${{ parameters.environment }}
+    pool:
+      name: $(privateAgentPool)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - template: ../steps/aks-login.yaml
+          - template: ../steps/helm-deploy.yaml
+            parameters:
+              serviceName: ${{ parameters.serviceName }}
+              environment: ${{ parameters.environment }}
+              valuesFile: ${{ parameters.valuesFile }}

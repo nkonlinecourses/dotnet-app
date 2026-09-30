@@ -135,3 +135,14 @@ The Terraform monitoring module creates Log Analytics and Azure Monitor alerting
 ## Pipeline template library
 
 The Azure DevOps pipelines use a layered reusable library: thin consumer pipelines call stage templates in `pipelines/templates/`, which compose `pipelines/jobs/` and reusable `pipelines/steps/`. See `pipelines/README.md` for the template contracts and required pipeline configuration.
+
+## Further improvements
+
+I would further consider below improvements to this application setup
+
+For terraform : i would consider, stage level pipeline deployment with each stage requiring approval for PROD
+Stages could be : 
+1- network layer: Setup the VNET, then subnets (individual subnets for AKS nodes, pods and private endpoints) - this will have separate statefile name eg. infra-network.tfstate
+2- shared layer : Setup shared resources eg. ACR, Azure KV , redis , storage account etc.. with every resource having their own individual private endpoint , and private DNS zone. And DNS record entry into shared network subscription (if using landing zones with Hub/spoke network pattern)
+3 - Data layer : Setup resources like databases (eg. sqlserver ,sqldb) with PE and DNS record .. same as above.. with entry into central DNS
+4 - cluster : setup resources like AKS, system , application node pools and relevant RBAC roles to Workload Identity.. (AcrPull, KV secrets user, STG file share contributor role etc..)
