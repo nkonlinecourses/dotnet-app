@@ -11,6 +11,8 @@ resource "azurerm_kubernetes_cluster" "this" {
     node_count     = var.node_count
     vm_size        = var.vm_size
     vnet_subnet_id = var.subnet_id
+    zones = [1,2,3]
+    node_public_ip_enabled = false
   }
 
   identity {
