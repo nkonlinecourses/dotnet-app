@@ -8,6 +8,13 @@ trigger:
       - deploy/helm/**
       - pipelines/**
 
+# resources:
+#   repositories:
+#     - repository: pipeline-templates
+#       type: git
+#       name: pipeline-templates
+#       ref: refs/heads/master
+
 parameters:
 - name: targetEnvironment
   type: string
@@ -18,11 +25,13 @@ parameters:
   default: true
 
 stages:
+#- template: templates/test-dotnet.yaml@pipeline-templates #refe the template from master pipeline-template repo
 - template: templates/test-dotnet.yaml
   parameters:
     serviceName: order-service
     testProjectPath: tests/OrderService.Tests/OrderService.Tests.csproj
 
+#- template: templates/build-dotnet.yaml@pipeline-templates #refe the template from master pipeline-template repo
 - template: templates/build-dotnet.yaml
   parameters:
     serviceName: order-service

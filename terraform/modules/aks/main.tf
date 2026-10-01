@@ -3,6 +3,8 @@ resource "azurerm_kubernetes_cluster" "this" {
   location            = var.location
   resource_group_name = var.resource_group_name
   dns_prefix          = var.name
+  private_cluster_enabled = true
+  private_dns_zone_id     = azurerm_private_dns_zone.example.id
 
   default_node_pool {
     name           = "system"

@@ -1,0 +1,30 @@
+#{{ $StorageClassName := printf "azurefile-csi-private-endpoints-%s" .Release.Name }}
+{{ $PersistentVolumeName := printf "test-app-%s-pv" .Values.environment}}
+{{- if  not (lookup "v1" "PersistentVolume"  .Release.Namespace $PersistentVolumeName ) }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ $PersistentVolumeName }}
+  # The label is used for matching the exact claim
+  labels:
+    usage: {{ $PersistentVolumeName }}
+  annotations:
+    pv.kubernetes.io/provisioned-by: file.csi.azure.com
+spec:
+  capacity:
+    storage: {{ .Values.storage.size }}
+  accessModes:
+    - {{ .Values.storage.accessModes }}
+  persistentVolumeReclaimPolicy: {{ .Values.storage.persistentVolumeReclaimPolicy }}
+  {{- if .Values.storage.privateEndpoint.enabled }}
+  storageClassName: {{ .Values.storage.storageClassName }}
+  {{- end }}
+  csi:
+    driver: file.csi.azure.com
+    volumeHandle: {{ .Release.Name }}_{{ .Values.storage.repository }}
+    volumeAttributes:
+      shareName: {{ .Values.storage.repository }}
+    nodeStageSecretRef:
+      name: {{ .Release.Name }}-storageaccount-exchange
+      namespace: {{ .Release.Name }}
+{{- end }}

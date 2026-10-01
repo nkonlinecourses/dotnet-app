@@ -1,5 +1,9 @@
 nameOverride: order-service
 
+registry: <acr>.azurecr.io
+environment: dev
+serviceAccountClientId: <workload_id> #workload identity of kubernetes agentpool
+
 image:
   repository: REPLACE_ACR/order-service
   tag: latest
@@ -14,3 +18,17 @@ ingress:
   host: demo.local
   path: /api/orders
   pathType: Prefix
+
+kv:
+  # -- Certificate stored in Azure Key Vault
+  tenantId: <testnat_id>
+  keyVaultName: <keyvalue>
+
+storage:
+  repository: <azurefileshare>
+  storageClassName: <storage_class_name>
+  accessModes: "ReadWriteMany"
+  size: 20Gi
+  persistentVolumeReclaimPolicy: "Retain"
+  privateEndpoint: 
+      enabled: true

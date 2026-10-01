@@ -8,6 +8,13 @@ trigger:
       - deploy/helm/**
       - pipelines/**
 
+# resources: # reference another git repo - which has the master pipeline templates that each application repo can reference
+#   repositories:
+#     - repository: pipeline-templates
+#       type: git
+#       name: pipeline-templates
+#       ref: refs/heads/master      
+
 parameters:
 - name: targetEnvironment
   type: string
@@ -18,11 +25,13 @@ parameters:
   default: true
 
 stages:
+#- template: templates/test-dotnet.yaml@pipeline-templates #refe the template from master pipeline-template repo
 - template: templates/test-dotnet.yaml
   parameters:
     serviceName: product-service
     testProjectPath: tests/ProductService.Tests/ProductService.Tests.csproj
 
+#- template: templates/build-dotnet.yaml@pipeline-templates #refe the template from master pipeline-template repo
 - template: templates/build-dotnet.yaml
   parameters:
     serviceName: product-service
@@ -31,6 +40,7 @@ stages:
     dependsOn: Test_product_service
 
 - ${{ if eq(parameters.deploy, true) }}:
+  #- template: templates/deploy.yaml@pipeline-templates #refe the template from master pipeline-template repo
   - template: templates/deploy.yaml
     parameters:
       serviceName: product-service

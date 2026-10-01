@@ -1,0 +1,30 @@
+#{{ $StorageClassName := printf "azurefile-csi-private-endpoints-%s" .Release.Name }}
+{{ $PersistentVolumeClaimName := printf "transform-repository-%s-pvc" .Values.environment }}
+{{ $PersistentVolumeName := printf "transform-repository-%s-pv" .Values.environment }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $PersistentVolumeClaimName }}
+  {{- if not .Values.storage.privateEndpoint.enabled }}
+  # Set this annotation to NOT let Kubernetes automatically create
+  # a persistent volume for this volume claim.
+  annotations:
+    volume.beta.kubernetes.io/storage-class: ""
+  {{- end }}
+spec:
+  {{- if not .Values.storage.privateEndpoint.enabled }}
+  selector:
+    # To make sure we match the claim with the exact volume, match the label
+    matchLabels:
+      usage: test-app-{{ .Values.environment }}-pv
+  {{- end }}
+  {{- if .Values.storage.privateEndpoint.enabled }}
+  storageClassName: {{ .Values.storage.storageClassName }}
+  volumeName: {{ $PersistentVolumeName }}
+  {{- end }}
+  accessModes:
+  - {{ .Values.storage.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.size }}
+
