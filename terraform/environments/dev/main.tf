@@ -83,3 +83,30 @@ module "key_vault_private_endpoint" {
   private_dns_zone_name          = "privatelink.vaultcore.azure.net"
   subresource_names              = ["vault"]
 }
+
+module "user_managed_identity" {
+  source        = "../../modules/private-endpoint"
+  resource_group_name = module.rg.name
+  name  = "${local.resourcePrefix}-umi-rcl-${var.resourceInstance}" 
+  location      = var.location
+}
+
+# Adding federated idenntity credential for RCL monitoring managed identity as well
+
+ resource "azurerm_federated_identity_credential" "aksRclMonitor" {   //federated creds for aks default agentpool
+
+  for_each            = toset(local.fedCredAccount)
+  name                = each.value
+  resource_group_name = local.resourceGroup
+  audience            = ["api://AzureADTokenExchange"]
+  issuer              = var.zone == "connected" ? module.aksConnected[0].aksOIDCIssuerUrl : module.aksIsolated[0].aksOIDCIssuerUrl
+  parent_id           = module.umi.resourceId
+  subject             = "system:serviceaccount:${each.value}:${each.value}-sa" 
+  lifecycle {
+    ignore_changes = [
+      issuer
+    ]
+  }
+
+  depends_on = [ module.aksConnected,module.aksIsolated, module.umi ]
+} 

@@ -17,8 +17,8 @@ jobs:
   - deployment: Release
     displayName: Release ${{ parameters.serviceName }}
     environment: application-${{ parameters.environment }}
-    pool:
-      name: $(privateAgentPool)
+    pool: devops
+      #name: $(privateAgentPool)
     strategy:
       runOnce:
         deploy:
