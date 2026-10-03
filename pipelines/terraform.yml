@@ -15,11 +15,11 @@ parameters:
 
 variables:
 - name: azureServiceConnection
-  value: sc-azure-platform-wif
+  value: kk-azure-main-299563fd58684ab7
 - name: backendResourceGroup
-  value: rg-tfstate
+  value: kml_rg_main-299563fd58684ab7
 - name: backendStorageAccount
-  value: sttfstateREPLACE
+  value: demoappstg
 - name: backendContainer
   value: tfstate
 
