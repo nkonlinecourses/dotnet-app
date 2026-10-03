@@ -6,8 +6,8 @@ jobs:
 - deployment: Apply
   displayName: Apply approved Terraform plan
   environment: infrastructure-${{ parameters.environment }}
-  pool:
-    vmImage: ubuntu-latest
+  pool: devops
+    #vmImage: ubuntu-latest
   strategy:
     runOnce:
       deploy:
